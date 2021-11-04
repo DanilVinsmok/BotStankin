@@ -1,7 +1,9 @@
+import config from "./config.js"
+import TelegramBotApi from 'node-telegram-bot-api'
+import * as menu from "./menu.js";
+import schedule from './schedule.js'
 
-const TelegramBotApi = require('node-telegram-bot-api')
-
-const token ='2067710720:AAEMgpYlmDI1DAxOu_EgF-edO8BT4lWw4-0'
+const token = config.token
 
 const bot = new TelegramBotApi(token,{polling:true})
 
@@ -32,147 +34,6 @@ function timeToDeath(date) {
     }
   }
   return (-1)
-}
-
-class Week {
-  constructor(options) {
-    this.parity = options.parity
-    this.days = options.days
-  }
-
-}
-
-class Day {
-  constructor(options) {
-    this.couples = options.couples
-    this.timeCouples = options.timeCouples
-  }
-
-  getScheduleDay(){
-    const couplesDay=''
-    for(let i=0;i<5;i++){
-      if(this.timeCouples[i]!=0){
-         couplesDay = couplesDay + this.couples[i]
-      }
-    }
-    return(couplesDay)
-  }
-}
-
-sunday = new Day({
-  couples: null,
-  timeCouples: null
-})
-
-monday = new Day({
-  couples: ['Нет пары',
-    '2.Математическая логика и теория алгоритмов\nЕписеева Ю.В [10.20-12.00]',
-    '\n\n3.ООП на языке высокогог уровня\nРазумовский А.И. [12.20-14.00]',
-    '\n\n4.Архитектура ЭВМ и вычислительных систем\nСаркисова И.О. [14.10-15.50]',
-    '\n\n5.Компьютерная геометрия и графика\nТапак А.В.[16.00-17.40]'],
-  timeCouples: [0, 1, 1, 1, 1]
-})
-
-tuesday = new Day({
-  couples: ['1.ООП на языке высокогог уровня\nРазумовский А.И. [8.30-10.10]',
-    '\n\n2.Политология\nКуткин В.С.[10.20-12.00]',
-    '\n\n3.Математическая логика и теория алгоритмов\nЕписеева Ю.В [12.20-14.00]',
-    '\n\n4.Иностранный язык\nВоронова М.Н.[14.10-15.50]',
-    '\n\n5.Физика\nКиссер А.Э. [16.00-17.40]'],
-  timeCouples: [1, 1, 1, 1, 1]
-})
-
-wednesday = new Day({
-  couples: ['1.Физика\nЛоскутов А.И.[8.30-10.10]',
-    '\n\n2.Политология\nКуткин В.С.[10.20-12.00]\n\n',
-    '3.Програмирование специальных вычислительных устройств\nВолкова О.Р.[12.20-14.00]',
-    '\n\n4.Философия\nГорюнов М.А. [14.10-15.50]',
-    '\n\n5.Прикладная физическая культура [16.00-17.40]'],
-  timeCouples: [1, 1, 1, 1, 1]
-})
-
-thursday = new Day({
-  couples: ['Нет пары',
-    '2.Архитектура ЭВМ и вычислительных систем\nСаркисова И.О. [10.20-12.00]',
-    '\n\n3.ООП на языке высокогог уровня\nРазумовский А.И. [12.20-14.00]',
-    '\n\n4.ООП на языке высокогог уровня\nРазумовский А.И. [14.10-15.50]',
-    'Нет пары'],
-  timeCouples: [0, 1, 1, 1, 0]
-})
-
-friday = new Day({
-  couples: ['1.Компьютерная геометрия и графика\nТопок А.В. [8.30-10.10]',
-    '\n\n2.Компьютерная геометрия и графика\nТопок А.В. [10.20-12.00]',
-    '\n\n3.Архитектура ЭВМ и вычислительных систем\nСаркисова И.О. [12.20-14.00]',
-    '\n\n4.Архитектура ЭВМ и вычислительных систем\nСаркисова И.О. [14.10-15.50]',
-    'Нет пары'],
-  timeCouples: [1, 1, 1, 1, 0]
-})
-
-saturday = new Day({
-  couples: ['1.Програмирование специальных вычислительных устройств\nВолкова О.Р.[8.30-10.10]',
-    '\n\n2.Философия\nГорюнов М.А. [10.20-12.00]',
-    '\n\n3.Философия\nГорюнов М.А. [12.20-14.00]']
-})
-
-
-
-const evenWeek = new Week({
-  partiy: true,
-  days: new Map()
-})
-
-evenWeek.days.set(0, sunday)
-evenWeek.days.set(1, monday)
-evenWeek.days.set(2, tuesday)
-evenWeek.days.set(3, wednesday)
-evenWeek.days.set(4, thursday)
-evenWeek.days.set(5, friday)
-evenWeek.days.set(6 , saturday)
-  
-function openKlavaMenu(chatId) {
-  bot.sendMessage(chatId, 'Меню', {
-    reply_markup:
-    {
-      keyboard:
-        [
-          [{ text: 'Полное рассписание' }],
-          [{ text: 'Расписание на сегодня' }, { text: 'Расписание на завтра' }],
-          [{ text: 'Время до конца пары' }],
-          [{ text: ',,,', }]
-        ],
-      one_time_keyboard: true
-    }
-  })
-}
-
-
-function openKlavaIsEven(chatId) {
-  bot.sendMessage(chatId, '/', {
-    reply_markup:
-    {
-      keyboard:
-        [
-          [{ text: 'Четная неделя' }, { text: 'Нечетная неделя', request_contact: true }]
-        ],
-      one_time_keyboard: true
-    }
-  })
-}
-
-const buttonsWeek = {
-  reply_markup: JSON.stringify({
-    inline_keyboard:
-      [
-        [{ text: 'Воскресенье', callback_data: '0' }],
-        [{ text: 'Понидельник', callback_data: '1' }],
-        [{ text: 'Вторник', callback_data: '2' }],
-        [{ text: 'Среда', callback_data: '3' }],
-        [{ text: 'Четверг', callback_data: '4' }],
-        [{ text: 'Пятница', callback_data: '5' }],
-        [{ text: 'Суббота', callback_data: '6' }],
-      ]
-  })
 }
 
 bot.on('callback_query', msg =>{
@@ -209,7 +70,7 @@ const start=() =>{
       }
 
       if(text === 'Четная неделя'){ 
-           bot.sendMessage(chatId,`Выбери день`,buttonsWeek)
+           bot.sendMessage(chatId,`Выбери день`, buttonsWeek)
           return openKlavaMenu(chatId)
       }
 
@@ -239,6 +100,4 @@ const start=() =>{
 }
 
 start()
-
-
 
