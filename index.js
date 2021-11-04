@@ -5,6 +5,18 @@ const token ='2067710720:AAEMgpYlmDI1DAxOu_EgF-edO8BT4lWw4-0'
 
 const bot = new TelegramBotApi(token,{polling:true})
 
+class Week {
+    constructor(options) {
+        this.parity = options.parity
+        this.days = options.days
+    }
+}
+
+const evenWeek = new Week({
+    partiy: true,
+    days: new Map()
+})
+
 function msToTime(duration) {
   var milliseconds = parseInt((duration % 1000) / 100),
     seconds = Math.floor((duration / 1000) % 60),
@@ -25,7 +37,7 @@ function timeToDeath(date) {
   const m = hours * 60 * 60 * 1000 + minutes * 60 * 1000 + seconds * 1000 + milliseconds
   const timeDech = [36600000, 43200000, 50400000, 57000000, 63600000]
   for (let i = 0; i < 5; i++) {
-    if (days[date.getDay()].timeCouples[i] = !0) {
+    if (evenWeek.days.get(date.getDay()).timeCouples[i] = !0) {
       if (timeDech[i] - m < 6000000) {
         return (msToTime(timeDech[i] - m))
       }
@@ -34,13 +46,7 @@ function timeToDeath(date) {
   return (-1)
 }
 
-class Week {
-  constructor(options) {
-    this.parity = options.parity
-    this.days = options.days
-  }
 
-}
 
 class Day {
   constructor(options) {
@@ -49,13 +55,13 @@ class Day {
   }
 
   getScheduleDay(){
-    const couplesDay=''
-    for(let i=0;i<5;i++){
-      if(this.timeCouples[i]!=0){
-         couplesDay = couplesDay + this.couples[i]
+    let couples = ''
+    for(let i=0;i<this.couples.length; i++){
+      if(this.timeCouples[i] !== 0){
+         couples += this.couples[i]
       }
     }
-    return(couplesDay)
+    return(couples)
   }
 }
 
@@ -112,15 +118,10 @@ friday = new Day({
 saturday = new Day({
   couples: ['1.Програмирование специальных вычислительных устройств\nВолкова О.Р.[8.30-10.10]',
     '\n\n2.Философия\nГорюнов М.А. [10.20-12.00]',
-    '\n\n3.Философия\nГорюнов М.А. [12.20-14.00]']
+    '\n\n3.Философия\nГорюнов М.А. [12.20-14.00]'],
+    timeCouples: [1, 1, 1, 0, 0]
 })
 
-
-
-const evenWeek = new Week({
-  partiy: true,
-  days: new Map()
-})
 
 evenWeek.days.set(0, sunday)
 evenWeek.days.set(1, monday)
@@ -178,7 +179,7 @@ const buttonsWeek = {
 bot.on('callback_query', msg =>{
   const num = msg.data
   const chatId=msg.message.chat.id
-  return bot.sendMessage(chatId,`${evenWeek.days[num].getScheduleDay()}`)
+  return bot.sendMessage(chatId,`${evenWeek.days.get(+num).getScheduleDay()}`)
 })
 
 const start=() =>{
@@ -215,13 +216,13 @@ const start=() =>{
 
       if(text === 'Расписание на сегодня'){ 
           const date =new Date(msg.date*1000)
-          const today=evenWeek.days[date.getDay]
+          const today=evenWeek.days.get(date.getDay())
           return bot.sendMessage(chatId,`${today.getScheduleDay()}`)
      }
 
      if(text === 'Расписание на завтра'){ 
          const date =new Date(msg.date*1000)
-         const tomorrow=evenWeek.days[date.getDay+1]
+         const tomorrow=evenWeek.days.get(date.getDay()+1)
          return bot.sendMessage(chatId,`${tomorrow.getScheduleDay()}`)
      }
 
